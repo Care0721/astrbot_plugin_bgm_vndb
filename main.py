@@ -3,7 +3,7 @@ from astrbot.api.event import AstrMessageEvent
 from astrbot.api import logger
 import httpx
 
-# 正确注册方式（位置参数）
+# 严格按位置参数顺序：name, author, desc, version
 @register("bgm_vndb", "Grok", "BGM & VNDB Galgame 剧情推送助手", "1.0.9")
 class BgmVndbGalPush(Star):
 
