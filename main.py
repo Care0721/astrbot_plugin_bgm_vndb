@@ -3,7 +3,8 @@ from astrbot.api.event import AstrMessageEvent
 from astrbot.api import logger
 import httpx
 
-@register(name="bgm_vndb", author="Grok", version="1.0.8", desc="BGM & VNDB Galgame 剧情推送助手")
+# 正确注册方式（位置参数）
+@register("bgm_vndb", "Grok", "BGM & VNDB Galgame 剧情推送助手", "1.0.9")
 class BgmVndbGalPush(Star):
 
     async def on_load(self):
@@ -11,7 +12,7 @@ class BgmVndbGalPush(Star):
         self.storage = await self.get_storage()
         if "subscriptions" not in self.storage:
             self.storage["subscriptions"] = {}
-        logger.info("🎮 BGM & VNDB 剧情推送助手 已成功加载 ✅ v1.0.8")
+        logger.info("🎮 BGM & VNDB 剧情推送助手 已成功加载 ✅ v1.0.9")
 
     # ==================== 工具函数 ====================
     async def _fetch_vndb_release(self, client: httpx.AsyncClient):
