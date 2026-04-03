@@ -1,11 +1,10 @@
 from astrbot.api.star import Star, Context, register
 from astrbot.api.event import AstrMessageEvent
-from astrbot.api import logger, scheduler
+from astrbot.api import logger
 import httpx
-from datetime import datetime
 
 class BgmVndbGalPush(Star):
-    plugin_name: str = "bgm_vndb"   # 已适配你的仓库名
+    plugin_name: str = "bgm_vndb"
 
     async def on_load(self):
         self.config = await self.get_config()
@@ -75,7 +74,7 @@ class BgmVndbGalPush(Star):
             "last_data": {}
         })
 
-        await ctx.send(f"✅ 已订阅 {typ.upper()} {sid}\n每日自动检查发售日、DLC、补丁、新作并推送。")
+        await ctx.send(f"✅ 已订阅 {typ.upper()} {sid}\n每日可手动用 /galcheck 检查更新")
 
     @register("预约提醒", ["预约提醒", "/预约提醒"], desc="查看你订阅的 Galgame 预约提醒")
     async def reminder_handler(self, ctx: Context, event: AstrMessageEvent, args: list[str]):
@@ -133,24 +132,3 @@ class BgmVndbGalPush(Star):
                             sub["last_data"]["date"] = new_date
                             updated_count += 1
         await ctx.send(f"✅ 检查完成，共发现 {updated_count} 条更新！")
-
-    # ==================== 每日自动推送（北京时间 9:00） ====================
-    @scheduler.cron("0 9 * * *")
-    async def daily_update_check(self):
-        logger.info("🎮 [BGM & VNDB] 开始每日更新检查...")
-        count = 0
-        async with httpx.AsyncClient(timeout=20) as client:
-            for chat_id, subs in self.storage.get("subscriptions", {}).items():
-                for sub in subs:
-                    try:
-                        if sub["type"] == "bgm":
-                            data = await self._fetch_bgm_subject(client, sub["id"])
-                            if data and data.get("date"):
-                                if sub["last_data"].get("date") != data["date"]:
-                                    logger.info(f"📢 更新推送 → {chat_id} | Bangumi {sub['id']} 发售日 {data['date']}")
-                                    sub["last_data"]["date"] = data["date"]
-                                    count += 1
-                        # VNDB 后续可继续扩展
-                    except Exception as e:
-                        logger.error(f"检查 {sub['type']} {sub['id']} 失败: {e}")
-        logger.info(f"🎮 [BGM & VNDB] 每日检查完成，发现 {count} 条更新")
