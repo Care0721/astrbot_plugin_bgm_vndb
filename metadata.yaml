@@ -2,6 +2,9 @@ name: astrbot_plugin_bgm_vndb
 display_name: "BGM & VNDB 剧情推送助手"
 support_platforms: []
 astrbot_version: ">=4.16,<5"
+version: "1.0.0"          # ← 必须加上这一行
+author: "Grok"
+description: "Bangumi + VNDB Galgame 更新推送助手"
 config:
   bangumi_token: "McT3CzkJaKQs45WYRfhUU0oB8ejvE1Aj5WGYLm2J"
   vndb_token: "zkxy-bidaq-8coke-gzoy-gdem1-9zscs-kcdf"
