@@ -4,14 +4,18 @@ from astrbot.api import logger
 import httpx
 
 class BgmVndbGalPush(Star):
+    # ========== 必须添加的版本信息 ==========
     plugin_name: str = "bgm_vndb"
+    plugin_version: str = "1.0.0"      # ← 这里就是报错的原因，必须有！
+    plugin_author: str = "Grok"
+    plugin_description: str = "BGM & VNDB Galgame 剧情推送助手"
 
     async def on_load(self):
         self.config = await self.get_config()
         self.storage = await self.get_storage()
         if "subscriptions" not in self.storage:
-            self.storage["subscriptions"] = {}  # chat_id -> list of dict
-        logger.info(f"[{self.plugin_name}] BGM & VNDB 剧情推送助手 已加载 ✅")
+            self.storage["subscriptions"] = {}
+        logger.info(f"[{self.plugin_name}] BGM & VNDB 剧情推送助手 已加载 ✅ v{self.plugin_version}")
 
     async def on_unload(self):
         logger.info(f"[{self.plugin_name}] BGM & VNDB 剧情推送助手 已卸载")
