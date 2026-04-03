@@ -3,17 +3,17 @@ from astrbot.api.star import Context, Star
 from astrbot.api import logger
 import httpx
 
-# 插件注册（新版本推荐写法）
 class BgmVndbGalPush(Star):
     def __init__(self, context: Context):
         super().__init__(context)
+        self.config = None
 
     async def on_load(self):
         self.config = await self.get_config()
         self.storage = await self.get_storage()
         if "subscriptions" not in self.storage:
             self.storage["subscriptions"] = {}
-        logger.info("🎮 BGM & VNDB 剧情推送助手 已成功加载 ✅ v1.0.4")
+        logger.info("🎮 BGM & VNDB 剧情推送助手 已成功加载 ✅ v1.0.5")
 
     # ==================== 工具函数 ====================
     async def _fetch_vndb_release(self, client: httpx.AsyncClient):
@@ -36,7 +36,6 @@ class BgmVndbGalPush(Star):
     # ==================== 命令 ====================
     @filter.command("galnews")
     async def galnews_handler(self, event: AstrMessageEvent):
-        """获取最新 Galgame 发售信息"""
         async with httpx.AsyncClient(timeout=15) as client:
             releases = await self._fetch_vndb_release(client)
             if not releases:
@@ -49,7 +48,6 @@ class BgmVndbGalPush(Star):
 
     @filter.command("订阅gal")
     async def subscribe_handler(self, event: AstrMessageEvent, args: list = None):
-        """订阅 Galgame 更新"""
         if not args or len(args) < 2:
             await event.send("用法: /订阅gal <vndb/bgm> <id>\n示例: /订阅gal bgm 45678")
             return
@@ -59,23 +57,21 @@ class BgmVndbGalPush(Star):
             return
         chat_id = event.get_session_id()
         self.storage["subscriptions"].setdefault(chat_id, []).append({"type": typ, "id": sid, "last_data": {}})
-        await event.send(f"✅ 已订阅 {typ.upper()} {sid}\n可用 /galcheck 手动检查")
+        await event.send(f"✅ 已订阅 {typ.upper()} {sid}")
 
     @filter.command("galcheck")
     async def galcheck_handler(self, event: AstrMessageEvent):
-        """手动检查订阅更新"""
-        await event.send("🔄 正在检查订阅更新...（当前为手动模式）")
+        await event.send("🔄 检查中...（当前为手动模式）")
         await event.send("✅ 检查完成！")
 
     @filter.command("预约提醒")
     async def reminder_handler(self, event: AstrMessageEvent):
-        """查看订阅列表"""
         chat_id = event.get_session_id()
         subs = self.storage["subscriptions"].get(chat_id, [])
         if not subs:
-            await event.send("📭 你还没有订阅任何 Galgame")
+            await event.send("📭 你还没有订阅")
             return
-        msg = "📅 **你的 Galgame 订阅列表**\n\n"
+        msg = "📅 **你的订阅列表**\n\n"
         for s in subs:
             msg += f"• {s['type'].upper()} {s['id']}\n"
         await event.send(msg)
