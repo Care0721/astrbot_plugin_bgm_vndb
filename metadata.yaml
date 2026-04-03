@@ -1,4 +1,4 @@
-name：astrbot_plugin_bgm_vndb
+ name：astrbot_plugin_bgm_vndb
 display_name: "BGM & VNDB 剧情推送助手"
 support_platforms: []
 astrbot_version: ">=4.16,<5"
