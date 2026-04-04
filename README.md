@@ -1,1 +1,2 @@
 # 一个用于检索galgame和订阅galgame和查看汉化进度的，调用的是我的bgm和vndb的api
+是astrbot插件
